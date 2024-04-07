@@ -7,7 +7,6 @@ const { runtime } = addOnSandboxSdk.instance;
 function start() {
     // APIs to be exposed to the UI runtime
     // i.e., to the `index.html` file of this add-on.
-
     const sandboxApi = {
         createRectangle: () => {
             const rectangle = editor.createRectangle();
@@ -21,6 +20,7 @@ function start() {
 
             // Define rectangle color.
             const color = { red: 0.32, green: 0.34, blue: 0.89, alpha: 1 };
+
             // Fill the rectangle with the color.
             const rectangleFill = editor.makeColorFill(color);
             rectangle.fill = rectangleFill;
@@ -29,15 +29,7 @@ function start() {
             const insertionParent = editor.context.insertionParent;
             insertionParent.children.append(rectangle);
         }
-
-        // getVersion:() => {
-        //     const currentState = editor.context.insertionParent;
-        //     console.log("current: ", currentState)
-        //     return currentState
-        // }
     };
-
-
 
     // Expose `sandboxApi` to the UI runtime.
     runtime.exposeApi(sandboxApi);

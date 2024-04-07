@@ -2,7 +2,6 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8" />
-        
         <meta
             name="description"
             content="Get started with Add-on development using JavaScript with Document Sandbox Runtime"
@@ -42,6 +41,24 @@
                 display:none;
 
             }
+
+            img {
+                max-width: 100px; /* Adjust the max-width as needed */
+                height: auto;
+                display: block;
+                margin: 0 auto 10px; /* Center the image horizontally and add space below */
+            }
+
+            .version-box{
+                display:flex;
+                flex-direction: row;
+                background-color: aquamarine;
+                margin-top: 10px;
+                padding: 10px;
+
+            }
+
+
         </style>
     </head>
     <body>
@@ -50,11 +67,11 @@
             You may use "addOnUISdk.app.ui.theme" to get the current theme and style accordingly.
         -->
         <div class="container">
-            <button id="createRectangle">Create Rectangle</button>
+            <button id="createRectangle" >Create Rectangle</button>
             <button id="saveVersion">Save Current Version</button>
 
             <div id="versionBlock">
-            <textarea id="vname">hahahehehe</textarea>
+            <div id="vname">hahahehehe</div>
             <button id="confirmName">saveName</button>
             <div></div>
             </div>

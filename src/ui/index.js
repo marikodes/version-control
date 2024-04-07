@@ -1,12 +1,4 @@
 import addOnUISdk from "https://new.express.adobe.com/static/add-on-sdk/sdk.js";
-import AddOnSdk from "https://new.express.adobe.com/static/add-on-sdk/sdk.js";
-
-// Wait for the SDK to be ready
-await AddOnSdk.ready;
-
-// Reference to the active document
-const { document } = AddOnSdk.app;
-
 
 addOnUISdk.ready.then(async () => {
     console.log("addOnUISdk is ready for use.");
@@ -20,12 +12,12 @@ addOnUISdk.ready.then(async () => {
     const sandboxProxy = await runtime.apiProxy("documentSandbox");
 
     const createRectangleButton = document.getElementById("createRectangle");
-    const versionList = document.getElementById("versionList");
-
     createRectangleButton.addEventListener("click", async event => {
         await sandboxProxy.createRectangle();
     });
 
+
+    const versionList = document.getElementById("versionList");
     const versions = [];
     class Version {
         constructor(name, thumbnail, imageState) {
@@ -51,26 +43,24 @@ addOnUISdk.ready.then(async () => {
     confirmNameButton.addEventListener("click", async event => {
         saveNameButton.style.display = "none";
         nameButton.contentEditable = false;
-        //const currentVer = await sandboxProxy.getVersion();
-        //console.log("currentVersion: ", currentVer)
         const currentVersion=""
         const versionName=nameButton.innerText;
         const thumbnail =""
 
         nameButton.innerText=""
 
-        // create thumbnails
-        const thumbnailResponse = await document.createRenditions({
+        const response = await addOnUISdk.app.document.createRenditions({
             range: "currentPage",
             format: "image/jpeg",
         });
 
-        const thumbnailURL=thumbnailResponse.URL
+        const downloadUrl = URL.createObjectURL(response[0].blob);        
 
+        console.log("url: ", downloadUrl)
         // Check if the user entered a name
         if (versionName) {
             // Create a new version object with the entered name
-            const newVersion = new Version(versionName, thumbnailURL, currentVersion);
+            const newVersion = new Version(versionName, downloadUrl, currentVersion);
             versions.push(newVersion);
 
             console.log("whoooah")
@@ -94,13 +84,20 @@ addOnUISdk.ready.then(async () => {
                 
                 box.classList.add("version-box");
                 box.innerHTML = `
-                    <img src="${version.thumbnail}" alt="Version Image">
-                    <p>Name: ${version.name}</p>
-                    <p>Time: ${version.time}</p>
+                    <div><img src="${version.thumbnail}" alt="Version Image"></div>
+                    <div>
+                    <div>Name: ${version.name}</div>
+                    <div>Time: ${version.time}</div>
+                    <div>
+                        <button>Download this version</div>
+                        <button>Load this version</div>
+                    </div>
+                    </div>
                 `;
                 versionList.appendChild(box);
             });
         }
+
 
     // Enable the button only when:
     // 1. `addOnUISdk` is ready,
