@@ -16,13 +16,13 @@ addOnUISdk.ready.then(async () => {
         await sandboxProxy.createRectangle();
     });
 
-
     const versionList = document.getElementById("versionList");
     const versions = [];
+
     class Version {
         constructor(name, thumbnail, imageState) {
             this.name = name;
-            this.thumbnail  = thumbnail; 
+            this.thumbnail = thumbnail;
             this.imageState = imageState;
             this.time = new Date().toLocaleString(); // Get current time
         }
@@ -34,40 +34,39 @@ addOnUISdk.ready.then(async () => {
     const confirmNameButton = document.getElementById("confirmName");
 
     saveVersionButton.addEventListener("click", async event => {
-        saveNameButton.style.display="block"
+        saveNameButton.style.display = "block";
         nameButton.contentEditable = true;
         nameButton.focus(); // Set focus on the nameButton field
-
-    })
+    });
 
     confirmNameButton.addEventListener("click", async event => {
         saveNameButton.style.display = "none";
         nameButton.contentEditable = false;
-        const currentVersion=""
-        const versionName=nameButton.innerText;
-        const thumbnail =""
+        const currentVersion = "";
+        const versionName = nameButton.innerText;
+        const thumbnail = "";
 
-        nameButton.innerText=""
+        nameButton.innerText = "";
 
         const response = await addOnUISdk.app.document.createRenditions({
             range: "currentPage",
             format: "image/jpeg",
         });
 
-        const downloadUrl = URL.createObjectURL(response[0].blob);        
+        const downloadUrl = URL.createObjectURL(response[0].blob);
 
-        console.log("url: ", downloadUrl)
+        console.log("url: ", downloadUrl);
         // Check if the user entered a name
         if (versionName) {
             // Create a new version object with the entered name
             const newVersion = new Version(versionName, downloadUrl, currentVersion);
             versions.push(newVersion);
 
-            console.log("whoooah")
+            console.log("whoooah");
             // Update the UI to display the list of version names
             displayVersions();
         } else {
-            console.log("what??")
+            console.log("what??");
             // Inform the user that they need to enter a name
             alert("Please enter a version name.");
         }
@@ -75,29 +74,46 @@ addOnUISdk.ready.then(async () => {
 
     // Function to display the list of versions
     function displayVersions() {
-            console.log("versions: ", versions)
+        console.log("versions: ", versions);
 
-            versionList.innerHTML = ""; // Clear previous content
-            
-            versions.forEach(function(version) {
-                const box = document.createElement("div");
-                
-                box.classList.add("version-box");
-                box.innerHTML = `
-                    <div><img src="${version.thumbnail}" alt="Version Image"></div>
-                    <div>
+        versionList.innerHTML = ""; // Clear previous content
+
+        // Sort versions based on time in descending order
+        versions.sort((a, b) => new Date(b.time) - new Date(a.time));
+
+        versions.forEach(function (version) {
+            const box = document.createElement("div");
+
+            box.classList.add("version-box");
+            box.innerHTML = `
+                <div>
+                    <img src="${version.thumbnail}" alt="Version Image">
+                    <button class="delete-button">x</button>
+                </div>
+                <div class="version-info">
                     <div>Name: ${version.name}</div>
                     <div>Time: ${version.time}</div>
                     <div>
-                        <button>Download this version</div>
-                        <button>Load this version</div>
+                        <button>Download this version</button>
+                        <button>Load this version</button>
                     </div>
-                    </div>
-                `;
-                versionList.appendChild(box);
-            });
-        }
+                </div>
+            `;
+            versionList.appendChild(box);
 
+            // Add event listener to delete button
+            const deleteButton = box.querySelector('.delete-button');
+            deleteButton.addEventListener('click', () => deleteVersion(version));
+        });
+    }
+
+    function deleteVersion(version) {
+        const index = versions.indexOf(version);
+        if (index !== -1) {
+            versions.splice(index, 1);
+            displayVersions();
+        }
+    }
 
     // Enable the button only when:
     // 1. `addOnUISdk` is ready,
